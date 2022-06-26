@@ -1,0 +1,7 @@
+name: AutoReplace
+version: '${project.version}'
+main: dev.jpb.autoreplace.AutoReplace
+api-version: 1.19
+authors: [ JackPriceBurns ]
+description: Auto replace broken tools and depleted item stacks.
+website: https://jpb.dev
