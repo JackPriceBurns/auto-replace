@@ -41,7 +41,7 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <outputFile>C:\Users\Jack Price-Burns\Desktop\plugin-dev-server\plugins\AutoReplace.jar</outputFile>
+                            <outputFile>/Users/jackpriceburns/Desktop/server/plugins/AutoReplace.jar</outputFile>
                         </configuration>
                     </execution>
                 </executions>

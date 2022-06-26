@@ -4,13 +4,14 @@ import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerItemBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.Damageable;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.logging.Level;
 
 public class EventListener implements Listener {
     private final AutoReplace autoReplace;
@@ -82,7 +83,61 @@ public class EventListener implements Listener {
                 if (chosen == null) {
                     chosen = inventoryItem;
                 }
-                // TODO: Add code to get item with most damage for replacement.
+
+                int itemDamage = ((Damageable) inventoryItem.getItemStack().getItemMeta()).getDamage();
+                int chosenDamage = ((Damageable) chosen.getItemStack().getItemMeta()).getDamage();
+
+                if (itemDamage > chosenDamage) {
+                    chosen = inventoryItem;
+                }
+            }
+
+            // No replacement candidate found.
+            if (chosen == null) {
+                return;
+            }
+
+            inventory.setItem(heldItemSlot, chosen.getItemStack());
+            inventory.setItem(chosen.getSlot(), null);
+        });
+    }
+
+    @EventHandler (priority = EventPriority.MONITOR)
+    public void onBlockPlace(BlockPlaceEvent event) {
+        PlayerInventory inventory = event.getPlayer().getInventory();
+        int heldItemSlot = inventory.getHeldItemSlot();
+        Material blockItemType = event.getItemInHand().getType();
+
+        autoReplace.getServer().getScheduler().scheduleSyncDelayedTask(autoReplace, () -> {
+            // They've got something in their hand, don't do anything.
+            if (inventory.getItem(heldItemSlot) != null) {
+                return;
+            }
+
+            HashSet<InventoryItem> matchedItems = new HashSet<>();
+
+            for (int slot = 0; slot < inventory.getSize(); slot++) {
+                ItemStack item = inventory.getItem(slot);
+                if (item == null) {
+                    continue;
+                }
+
+                if (item.getType().equals(blockItemType)) {
+                    matchedItems.add(new InventoryItem(item, slot));
+                }
+            }
+
+            InventoryItem chosen = null;
+
+            for (InventoryItem inventoryItem : matchedItems) {
+                if (chosen == null) {
+                    chosen = inventoryItem;
+                    continue;
+                }
+
+                if (inventoryItem.getItemStack().getAmount() < chosen.getItemStack().getAmount()) {
+                    chosen = inventoryItem;
+                }
             }
 
             // No replacement candidate found.
