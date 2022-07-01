@@ -16,3 +16,6 @@ Things not currently considered:
 - Bows
 - Thorwables (Snowballs, Ender Pearls, etc)
 - Enchantments
+
+Bugs:
+- If you have a placeable in your off-hand (like torches) and your main hand is empty, it will move try and move a stack to the empty main hand because it thinks you just depleted your stack.
